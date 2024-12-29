@@ -22,22 +22,26 @@ def get_diagonal_strings(matrix):
 
     return diagonals
 
-def transpose_list_of_strings(lst):
-    max_len = max(len(s) for s in lst)
-    result = []
+def get_3x3_grids(array_of_strings):
+    if len(array_of_strings) < 3 or any(len(row) < 3 for row in array_of_strings):
+        return []
 
-    for i in range(max_len):
-        row = []
-        for s in lst:
-            if i < len(s):
-                row.append(s[i])
-            else:
-                row.append(" ")
-        result.append("".join(row))
+    grids = []
+    for i in range(len(array_of_strings) - 2):
+        for j in range(len(array_of_strings[0]) - 2):
+            grid = [row[j:j+3] for row in array_of_strings[i:i+3]]
+            grids.append(grid)
+    return grids
 
-    return result
-
-
+def mas_cross(grid):
+    if len(grid) != 3:
+        return False
+    else:
+        if grid[1][1] == "A" and ((grid[0][2] == "M" and grid[2][0] == "S" and grid[0][0] == "M" and grid[2][2] == "S") or (grid[0][2] == "M" and grid[2][0] == "S" and grid[0][0] == "S" and grid[2][2] == "M") or (grid[0][2] == "S" and grid[2][0] == "M" and grid[0][0] == "M" and grid[2][2] == "S") or (grid[0][2] == "S" and grid[2][0] == "M" and grid[0][0] == "S" and grid[2][2] == "M")):
+            return True
+        else:
+            return False
+        
 # Change next 1-2 lines if you want to load input from different source
 
 response = requests.get('https://raw.githubusercontent.com/trents/advent_of_code_py/refs/heads/main/2024/input4.txt')
@@ -54,19 +58,28 @@ for line in text_list:
 
 # Vertical XMASes
 
-transposed = transpose_list_of_strings(text_list)
-for line in transposed:
+rotated = [''.join(row[i] for row in text_list[::-1]) for i in range(len(text_list[0]))]
+
+for line in rotated:
     total_xmas += xmas_count(line)
 
 # Diagonal XMASes
 
 diagonals = get_diagonal_strings(text_list)
-print(diagonals)
 for line in diagonals:
     total_xmas += xmas_count(line)
 
-diagonals = get_diagonal_strings(transposed)
-for line in diagonals:
+other_diagonals = get_diagonal_strings(rotated)
+for line in other_diagonals:
     total_xmas += xmas_count(line)
 
-print(total_xmas)
+print("Answer to 2024 Problem 4a:",total_xmas)
+
+grids = get_3x3_grids(text_list)
+
+count_of_mas_crosses = 0
+for grid in grids:
+    if mas_cross(grid):
+        count_of_mas_crosses += 1
+
+print("Answer to 2024 Problem 4b:",count_of_mas_crosses)
