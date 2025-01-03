@@ -8,10 +8,82 @@ def find_cursor(maze):
             if maze[i][j] == "^" or maze[i][j] == ">" or maze[i][j] == "<" or maze[i][j] == "v":
                 return i, j, maze[i][j]
 
+def move_cursor(maze):
+    xloc, yloc, cursor_shape = find_cursor(maze)
+    if count_xs(maze) == 42:
+        printable_maze = ""
+        for line in maze:
+            for char in line:
+                printable_maze += char
+            printable_maze += "\n"
+        print(printable_maze)
+
+    if cursor_shape == "^":
+        if xloc == 0:
+            maze[xloc][yloc] = "X"
+            return maze, "E"
+        elif maze[xloc-1][yloc] == "#":
+            maze[xloc][yloc] = ">"
+            return maze, "N"
+        else:
+            maze[xloc][yloc] = "X"
+            maze[xloc-1][yloc] = "^"
+            return maze, "N"
+    elif cursor_shape == ">":
+        if yloc == len(maze[0]) - 1:
+            maze[xloc][yloc] = "X"
+            return maze, "E"
+        elif maze[xloc][yloc+1] == "#":
+            maze[xloc][yloc] = "v"
+            return maze, "N"
+        else:
+            maze[xloc][yloc] = "X"
+            maze[xloc][yloc+1] = ">"
+            return maze, "N"
+    elif cursor_shape == "v":
+        if yloc == len(maze) - 1:
+            maze[xloc][yloc] = "X"
+            return maze, "E"
+        elif maze[xloc+1][yloc] == "#":
+            maze[xloc][yloc] = "<"
+            return maze, "N"
+        else:
+            maze[xloc][yloc] = "X"
+            maze[xloc+1][yloc] = "v"
+            return maze, "N"
+    elif cursor_shape == "<":
+        if yloc == 0:
+            maze[xloc][yloc] = "X"
+            return maze, "E"
+        elif maze[xloc][yloc-1] == "#":
+            maze[xloc][yloc] = "^"
+            return maze, "N"
+        else:
+            maze[xloc][yloc] = "X"
+            maze[xloc][yloc-1] = "<"
+            return maze, "N"
+
+def count_xs(maze):
+    x_count = 0
+    for line in maze:
+        for char in line:
+            if char == "X":
+                x_count += 1
+    return x_count
+
 # Change next 1-2 lines if you want to load input from different source
 
 response = requests.get('https://raw.githubusercontent.com/trents/advent_of_code_py/refs/heads/main/2024/input6.txt')
 text = response.text
 
-maze = text.split("\n")
-print(find_cursor(maze))
+maze_lines = text.split("\n")
+maze = []
+for line in maze_lines:
+    line_chars = [char for char in line]
+    maze.append(line_chars)
+
+exit_value = "N"
+while exit_value == "N":
+    maze, exit_value = move_cursor(maze)
+
+print(count_xs(maze))
