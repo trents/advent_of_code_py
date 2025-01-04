@@ -7,16 +7,17 @@ def find_cursor(maze):
         for j in range(0,len(maze[0])):
             if maze[i][j] == "^" or maze[i][j] == ">" or maze[i][j] == "<" or maze[i][j] == "v":
                 return i, j, maze[i][j]
+            
+def get_x_coordinates(maze):
+    coords_list = []
+    for i in range(0,len(maze)):
+        for j in range(0,len(maze[0])):
+            if maze[i][j] == "X":
+                coords_list.append([i,j])
+    return coords_list
 
 def move_cursor(maze):
     xloc, yloc, cursor_shape = find_cursor(maze)
-    if count_xs(maze) == 42:
-        printable_maze = ""
-        for line in maze:
-            for char in line:
-                printable_maze += char
-            printable_maze += "\n"
-        print(printable_maze)
 
     if cursor_shape == "^":
         if xloc == 0:
@@ -71,6 +72,14 @@ def count_xs(maze):
                 x_count += 1
     return x_count
 
+def reset_maze(maze):
+    maze_lines = text.split("\n")
+    maze = []
+    for line in maze_lines:
+        line_chars = [char for char in line]
+        maze.append(line_chars)
+    return maze
+
 # Change next 1-2 lines if you want to load input from different source
 
 response = requests.get('https://raw.githubusercontent.com/trents/advent_of_code_py/refs/heads/main/2024/input6.txt')
@@ -86,4 +95,6 @@ exit_value = "N"
 while exit_value == "N":
     maze, exit_value = move_cursor(maze)
 
-print(count_xs(maze))
+print("Solution to 2024 Problem 6a:",count_xs(maze))
+
+print("Solution to 2024 Problem 6b:",loop_count)
